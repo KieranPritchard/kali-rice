@@ -1,0 +1,32 @@
+add_newline = true
+format = "$directory$git_branch$git_status$python$golang$nodejs$character"
+
+[character]
+success_symbol = "[❯](bold #00e5ff)"
+error_symbol   = "[❯](bold #ff2e97)"
+
+[directory]
+style = "bold #00e5ff"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[git_branch]
+symbol = " "
+style  = "#ff2e97"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style  = "#ff2e97"
+format = '([$all_status$ahead_behind]($style) )'
+
+[python]
+format = "[${symbol}${version}]($style) "
+style  = "#7d8a99"
+
+[golang]
+format = "[${symbol}${version}]($style) "
+style  = "#7d8a99"
+
+[nodejs]
+format = "[${symbol}${version}]($style) "
+style  = "#7d8a99"
