@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# kali-rice installer: GNOME neon-professional theme with Fastfetch
+# kali-rice installer: GNOME Metroid theme with Fastfetch
 # Usage: ./install.sh   (run as your normal user, not root)
 set -euo pipefail
 
@@ -40,15 +40,15 @@ fc-cache -f -v
 # Installs the orchis gtk theme
 echo "==> Installing Orchis GTK theme"
 git clone --depth 1 https://github.com/vinceliuice/Orchis-theme "$WORK/orchis"
-(cd "$WORK/orchis" && ./install.sh -c dark -t blue --tweaks solid)
+(cd "$WORK/orchis" && ./install.sh -c dark -t teal --tweaks solid)
 
 # Applies the colours of the folders
-echo "==> Applying Papirus cyan folders"
+echo "==> Applying Papirus teal/cyan folders"
 if command -v papirus-folders &>/dev/null; then
-    papirus-folders -C bluegrey --theme Papirus-Dark || true
+    papirus-folders -C teal --theme Papirus-Dark || true
 else
     wget -qO- https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-folders/master/install.sh | sh
-    papirus-folders -C bluegrey --theme Papirus-Dark || true
+    papirus-folders -C teal --theme Papirus-Dark || true
 fi
 
 echo "==> Configuring Terminal (Kitty icons, styling & CLI file icons)"
@@ -58,6 +58,10 @@ sudo apt install -y lsd
 
 # Ensure Kitty config directory exists
 mkdir -p "$CFG/kitty"
+
+# Fetch matching theme (Nord - deep dark cyan/blue theme) from dexpota/kitty-themes repository[cite: 1]
+THEME_URL="https://raw.githubusercontent.com/dexpota/kitty-themes/master/themes/Nord.conf"
+wget -qO "$CFG/kitty/theme.conf" "$THEME_URL" || true
 
 # Generate/overwrite kitty.conf with modern styling, font icons, and background settings
 cat > "$CFG/kitty/kitty.conf" << 'EOF'
@@ -77,33 +81,12 @@ background_opacity 0.88
 background_blur 1
 
 # Optional: Uncomment and set a full file path if you want a background image in Kitty
-# background_image /home/YOUR_USER/Pictures/neon-wall.png
+# background_image /home/YOUR_USER/Pictures/metroid-wall.png
 # background_image_layout scaled
 # background_image_linear yes
 
-# Neon Cyberpunk Color Palette
-background #0b0e14
-foreground #bfbab0
-cursor #73d0ff
-selection_background #212733
-
-# Color Map (Teal / Cyberpunk highlights)
-color0 #151a21
-color8 #485160
-color1 #ff3333
-color9 #ff6565
-color2 #bae67e
-color10 #d4bfff
-color3 #ffa759
-color11 #ffe599
-color4 #73d0ff
-color12 #95e6cb
-color5 #d4bfff
-color13 #fca7ea
-color6 #95e6cb
-color14 #80d4ff
-color7 #d9d7ce
-color15 #f3f2ec
+# Include external theme from dexpota/kitty-themes
+include ./theme.conf
 EOF
 
 # Add icon-enabled aliases to Shells (zsh / bash)
@@ -139,14 +122,33 @@ for RC_FILE in "$HOME/.zshrc" "$HOME/.bashrc"; do
     fi
 done
 
-# Generates the wallpaper
-echo "==> Generating neon wallpaper"
-mkdir -p "$HOME/Pictures"
-WALL="$HOME/Pictures/neon-wall.png"
-convert -size 2560x1440 radial-gradient:'#0f2a3a-#0b0e14' "$WALL"
+# Sets the wallpaper from the local wallpapers folder
+echo "==> Setting Metroid theme wallpaper"
+WALLPAPER_DIR="$REPO_DIR/wallpapers"
+SELECTED_WALL=""
+
+if [[ -d "$WALLPAPER_DIR" ]]; then
+    # Find the first png, jpg, or jpeg file in the wallpapers directory next to the script[cite: 1]
+    FIRST_WALL="$(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" \) | head -n 1)"
+    
+    if [[ -n "$FIRST_WALL" ]]; then
+        mkdir -p "$HOME/Pictures"
+        SELECTED_WALL="$HOME/Pictures/$(basename "$FIRST_WALL")"
+        cp "$FIRST_WALL" "$SELECTED_WALL"
+        echo "Found wallpaper: $(basename "$FIRST_WALL")"[cite: 1]
+    fi
+fi
+
+# Fallback generator if no local wallpapers were found
+if [[ -z "$SELECTED_WALL" ]]; then
+    echo "No wallpaper found in $WALLPAPER_DIR. Generating fallback dark cyan gradient wallpaper."
+    mkdir -p "$HOME/Pictures"
+    SELECTED_WALL="$HOME/Pictures/metroid-wall.png"
+    convert -size 2560x1440 radial-gradient:'#003344-#05080c' "$SELECTED_WALL"
+fi
 
 echo "==> Applying GNOME settings (dconf/gsettings)"
-# Set GNOME color scheme to dark mode & apply Orchis GTK / Papirus icons
+# Set GNOME color scheme to dark mode & apply Orchis Teal GTK / Papirus dark icons
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' || true
 gsettings set org.gnome.desktop.interface gtk-theme 'Orchis-Teal-Dark' || true
 gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark' || true
@@ -157,7 +159,7 @@ gsettings set org.gnome.desktop.interface font-name 'JetBrainsMono Nerd Font 10'
 gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrainsMono Nerd Font Mono 10' || true
 
 # Set wallpaper
-WALL_URI="file://$WALL"
+WALL_URI="file://$SELECTED_WALL"
 gsettings set org.gnome.desktop.background picture-uri "$WALL_URI" || true
 gsettings set org.gnome.desktop.background picture-uri-dark "$WALL_URI" || true
 gsettings set org.gnome.desktop.background picture-options 'zoom' || true
