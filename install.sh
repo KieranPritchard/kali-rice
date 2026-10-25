@@ -45,10 +45,10 @@ git clone --depth 1 https://github.com/vinceliuice/Orchis-theme "$WORK/orchis"
 # Applies the colours of the folders
 echo "==> Applying Papirus teal/cyan folders"
 if command -v papirus-folders &>/dev/null; then
-    papirus-folders -C teal --theme Papirus-Dark || true
+    papirus-folders -C bluegray --theme Papirus-Dark || true
 else
     wget -qO- https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-folders/master/install.sh | sh
-    papirus-folders -C teal --theme Papirus-Dark || true
+    papirus-folders -C bluegray --theme Papirus-Dark || true
 fi
 
 echo "==> Configuring Terminal (Kitty icons, styling & CLI file icons)"
@@ -163,6 +163,12 @@ WALL_URI="file://$SELECTED_WALL"
 gsettings set org.gnome.desktop.background picture-uri "$WALL_URI" || true
 gsettings set org.gnome.desktop.background picture-uri-dark "$WALL_URI" || true
 gsettings set org.gnome.desktop.background picture-options 'zoom' || true
+
+# Configure GDM (Login Screen) Wallpaper
+echo "==> Setting up GDM (login screen) wallpaper"
+git clone --depth 1 https://github.com/kem-a/gnome-gdm-wallpaper "$WORK/gdm-wallpaper"
+chmod +x "$WORK/gdm-wallpaper/set-gdm-wallpaper"
+sudo "$WORK/gdm-wallpaper/set-gdm-wallpaper" -i "$SELECTED_WALL" || true
 
 # Enable Dash to Dock extension if available
 if command -v gnome-extensions &>/dev/null; then
