@@ -8,6 +8,7 @@ CFG="$HOME/.config"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
+# Updates the package lists and installs gnome
 echo "==> Updating package lists and installing GNOME + tools"
 sudo apt update
 sudo apt install -y \
@@ -29,22 +30,25 @@ if ! command -v starship &>/dev/null; then
     sudo apt install -y starship || curl -sS https://starship.rs/install.sh | sh -s -- -y
 fi
 
+# Installs the fonts for jetbrains mono
 echo "==> Installing Nerd Font (JetBrainsMono)"
 mkdir -p "$HOME/.local/share/fonts/JetBrainsMonoNF"
 wget -q -O "$WORK/jb.zip" https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
 unzip -oq "$WORK/jb.zip" -d "$HOME/.local/share/fonts/JetBrainsMonoNF"
 fc-cache -f -v
 
+# Installs the orchis gtk theme
 echo "==> Installing Orchis GTK theme"
 git clone --depth 1 https://github.com/vinceliuice/Orchis-theme "$WORK/orchis"
-(cd "$WORK/orchis" && ./install.sh -c dark -t teal --tweaks black)
+(cd "$WORK/orchis" && ./install.sh -c dark -t blue --tweaks solid)
 
+# Applies the colours of the folders
 echo "==> Applying Papirus cyan folders"
 if command -v papirus-folders &>/dev/null; then
-    papirus-folders -C cyan --theme Papirus-Dark || true
+    papirus-folders -C bluegrey --theme Papirus-Dark || true
 else
     wget -qO- https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-folders/master/install.sh | sh
-    papirus-folders -C cyan --theme Papirus-Dark || true
+    papirus-folders -C bluegrey --theme Papirus-Dark || true
 fi
 
 echo "==> Configuring Terminal (Kitty icons, styling & CLI file icons)"
@@ -124,6 +128,7 @@ mkdir -p "$CFG/kitty"
 [[ -f "$REPO_DIR/config/kitty/kitty.conf" ]] && ln -sf "$REPO_DIR/config/kitty/kitty.conf" "$CFG/kitty/kitty.conf"
 [[ -f "$REPO_DIR/config/starship.toml" ]]    && ln -sf "$REPO_DIR/config/starship.toml"     "$CFG/starship.toml"
 
+# Configures the shell
 echo "==> Configuring Shell (Starship Prompt & Fastfetch Sysinfo)"
 for RC_FILE in "$HOME/.zshrc" "$HOME/.bashrc"; do
     if [[ -f "$RC_FILE" ]]; then
@@ -134,6 +139,7 @@ for RC_FILE in "$HOME/.zshrc" "$HOME/.bashrc"; do
     fi
 done
 
+# Generates the wallpaper
 echo "==> Generating neon wallpaper"
 mkdir -p "$HOME/Pictures"
 WALL="$HOME/Pictures/neon-wall.png"
