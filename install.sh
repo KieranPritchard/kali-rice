@@ -22,7 +22,8 @@ sudo apt install -y \
     wget \
     unzip \
     fontconfig \
-    fastfetch
+    fastfetch \
+    libglib2.0-dev-bin
 
 # Install Starship prompt (tries apt first, falls back to official installer script)
 if ! command -v starship &>/dev/null; then
