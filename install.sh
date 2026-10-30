@@ -43,7 +43,7 @@ git clone --depth 1 https://github.com/vinceliuice/Orchis-theme "$WORK/orchis"
 (cd "$WORK/orchis" && ./install.sh -c dark -t teal --tweaks solid)
 
 # Applies the colours of the folders
-echo "==> Applying Papirus teal/cyan folders"
+echo "==> Applying Papirus blue-gray folders"
 if command -v papirus-folders &>/dev/null; then
     papirus-folders -C bluegray --theme Papirus-Dark || true
 else
