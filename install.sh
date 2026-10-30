@@ -44,12 +44,17 @@ git clone --depth 1 https://github.com/vinceliuice/Orchis-theme "$WORK/orchis"
 
 # Applies the colours of the folders
 echo "==> Applying Papirus blue-gray folders"
-if command -v papirus-folders &>/dev/null; then
-    papirus-folders -C bluegray --theme Papirus-Dark || true
-else
-    wget -qO- https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-folders/master/install.sh | sh
-    papirus-folders -C bluegray --theme Papirus-Dark || true
+if ! command -v papirus-folders &>/dev/null; then
+    wget -qO- https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-folders/master/install.sh | sudo sh
 fi
+
+# Apply bluegray color across Papirus theme variants with root privileges
+sudo papirus-folders -C bluegray --theme Papirus || true
+sudo papirus-folders -C bluegray --theme Papirus-Dark || true
+
+# Force refresh GTK & GNOME icon cache
+sudo gtk-update-icon-cache -f -t /usr/share/icons/Papirus-Dark 2>/dev/null || true
+sudo gtk-update-icon-cache -f -t /usr/share/icons/Papirus 2>/dev/null || true
 
 echo "==> Configuring Terminal (Kitty icons, styling & CLI file icons)"
 
